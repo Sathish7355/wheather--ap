@@ -1,4 +1,4 @@
-import React, {useState,useEffect } from 'react'
+import React, {useState} from 'react'
 import propTypes from "prop-types"
 
 import searchIcon from "./assets/search.png";
@@ -16,7 +16,7 @@ import cloudsIcon from "./assets/clouds.png"
     <div className='image'>
       <img src={icon} alt="img" height={160} width={160}/>
     </div>
-    <div className='temp'>{temp}°C</div>
+    <div className='temp'>{temp !== null ? `${temp}°C` : "--"}°C</div>
     <div className='location'>{city}</div>
     <div className='country'>{country}</div>
     <div className='coord'>
@@ -61,15 +61,16 @@ WeatherDetails.propTypes={
 
 function Weather() {
   let api_key="b211c2b21f761722c3fa3d0941acde2e"
-  const [text,setText]=useState("chicago")
+  const [text,setText]=useState("")
   const [icon,setIcon]= useState(snowIcon);
-  const [temp ,setTemp]= useState(0);
+ 
   const[city,setCity] =useState("chicago"); 
   const [country, setCountry] = useState("US");
   const [lat,setLat] = useState(0)
   const [lon ,setLon]=useState(0)
-  const [humidity,setHumidity] =useState("0")
-  const [wind ,setWind] = useState("0")
+   const [temp ,setTemp]= useState(null);
+ const [humidity,setHumidity] = useState(null)
+const [wind,setWind] = useState(null)
   const [citynotfound ,setCitynotFound]=useState(false)
   const [loading ,setLoading]=useState(false)
    const [error, setError] =useState(null)
@@ -93,7 +94,7 @@ function Weather() {
 
   const search = async ()=>{
     setLoading(true)
-    let url =`https://api.openweathermap.org/data/2.5/weather?q=${text}&appid=${api_key}&units=metric;`
+    let url =`https://api.openweathermap.org/data/2.5/weather?q=${text}&appid=${api_key}&units=metric`;
     try {
     let res= await fetch(url);
     let data= await res.json()
@@ -129,9 +130,8 @@ function Weather() {
      if(e.key === "Enter")
       search()
   }
-  useEffect (function(){
-     search()
-  },[])
+
+
   return (
     <>
     <div className='container'>
@@ -147,8 +147,18 @@ function Weather() {
           {error &&<div className='error-message'>{error}</div>}
           {citynotfound &&<div className='city-notfound'>City Not Found</div>}
 
-          {!loading && !citynotfound &&<WeatherDetails icon={icon} temp={temp} city={city} country={country} lat={lat} lon={lon}
-          humidity={humidity} wind={wind} />}
+          {!loading && !citynotfound && temp !== null && (
+  <WeatherDetails
+    icon={icon}
+    temp={temp}
+    city={city}
+    country={country}
+    lat={lat}
+    lon={lon}
+    humidity={humidity}
+    wind={wind}
+  />
+)}
     </div>
      </>
   )
